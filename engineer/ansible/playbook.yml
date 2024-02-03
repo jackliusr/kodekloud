@@ -1,0 +1,11 @@
+---
+- name: Update web servers
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Install zip
+    yum:
+      name: zip
+      state: present
