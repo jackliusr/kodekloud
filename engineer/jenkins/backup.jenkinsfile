@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    //job name: Jenkins Database Backup Job , backup mysql
+    environment {
+        DB_HOST = 'stdb01'
+        DB_NAME = 'kodekloud_db01'
+        FILESVR = '172.16.238.16'
+        BACKUP_FILE_NAME = "db_${new Date().format('yyyy-MM-dd')}.sql"
+    }
+    triggers {
+        cron('*/10 * * * *')
+    }
+    //install pipeline, mysql plugins
+    stages {
+        stage('MySQL Backup ') {
+            steps {
+
+                script {
+                    // Create a backup of the MySQL database and gzip it
+                    // /mysqldump -u kodekloud_roy -pasdfgdsd kodekloud_db01
+                  withCredentials(
+                    //[usernamePassword(credentialsId: 'db-cred', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')],
+                    [usernamePassword(credentialsId: 'dbhost-cred', usernameVariable: 'DBHOST_USER', passwordVariable: 'DBHOST_PASSWORD')],
+                    ) {
+                        sh 'sshpass -p $DBHOST_PASSWORD ssh -o StrictHostKeyChecking=no $DBHOST_USER@$DB_HOST "mysqldump -u kodekloud_roy -pasdfgdsd kodekloud_db01"  > $BACKUP_FILE_NAME'
+                    }
+                }
+            }
+        }
+        //stdb01	172.16.239.10	stdb01.stratos.xfusioncorp.com	peter	Sp!dy	Nautilus DB Server
+        //stbkp01	172.16.238.16	stbkp01.stratos.xfusioncorp.com	clint	H@wk3y3	Nautilus Backup Server
+        //jenkins	172.16.238.19	jenkins.stratos.xfusioncorp.com	jenkins	j@rv!s
+        stage('Upload to FILESVR') {
+            steps {
+                withCredentials(
+                    [
+                        usernamePassword(credentialsId: 'backup-cred', 
+                        usernameVariable: 'BACKUP_USER', 
+                        passwordVariable: 'BACKUP_PASSWORD')
+                ]) {
+                    // Upload the gzip file to AWS S3
+                     sh 'sshpass -p H@wk3y3 scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  $BACKUP_FILE_NAME clint@stbkp01:/home/clint/db_backups/$BACKUP_FILE_NAME'
+                    
+                }
+            }
+        }
+        
+        stage('Delete Local Backup') {
+            steps {
+                // Delete the local gzip backup file
+                sh "rm ${env.BACKUP_FILE_NAME}"
+            }
+        }
+    }
+}
