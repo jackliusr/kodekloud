@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+    //job name: Jenkins Database Backup Job , backup mysql
+    environment {
+        DB_HOST = 'stdb01'
+        DB_NAME = 'kodekloud_db01'
+        FILESVR = '172.16.238.16'
+        BACKUP_FILE_NAME = "db_${new Date().format('yyyy-MM-dd')}.sql"
+    }
+    triggers {
+        cron('*/5 * * * *')
+    }
+    //install pipeline, mysql plugins
+    stages {
+        //ststor01	172.16.238.15	ststor01.stratos.xfusioncorp.com	natasha	Bl@kW	Nautilus Storage Server
+        //stapp02	172.16.238.11	stapp02.stratos.xfusioncorp.com	steve	Am3ric@	Nautilus App 2
+        //jenkins	172.16.238.19	jenkins.stratos.xfusioncorp.com	jenkins	j@rv!s
+        ///var/log/httpd
+        //access_log  error_log
+        stage('Upload to FILESVR') {
+            steps {
+               //best practice: keep secrets in jenksin, using withCredentials etc
+                   sh 'sshpass -p Am3ric@ scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  steve@stapp02:/var/log/httpd/* .'
+                   sh 'sshpass -p Bl@kW scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null * natasha@ststor01:/usr/src/finance'
+                    
+                }
+            }
+        
+        
+        stage('Delete Local Backup') {
+            steps {
+                // Delete the local gzip backup file
+                sh "rm *"
+            }
+        }
+    }
+}
