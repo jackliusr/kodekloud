@@ -20,7 +20,10 @@ spec:
       volumes:
       - name: vol-conf
         configMap:
-          name: php-config
+          name: php-config-cm
+          items:
+          - key: php.ini
+            path: php.ini
       containers:
       - image: webdevops/php-apache:alpine-3-php7
         name: httpd-php-container
@@ -28,6 +31,7 @@ spec:
         volumeMounts:
         - name: vol-conf
           mountPath: /opt/docker/etc/php/php.ini
+          subPath: php.ini
         env:
         - name: MYSQL_HOST
           valueFrom:
