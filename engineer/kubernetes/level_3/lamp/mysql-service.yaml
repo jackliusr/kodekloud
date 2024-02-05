@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: lamp-wp
+  name: mysql-service
+  namespace: default
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: lamp-wp
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

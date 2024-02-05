@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  variables_order: EGPCS
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: php-config
