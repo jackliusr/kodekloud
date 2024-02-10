@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- mysql-db-url.yaml
+- mysql-host.yaml
+- mysql-root-pass.yaml
+- mysql-user-pass.yaml
+- php-config.yaml
+- lemp-wp.yaml
+- mysql-service.yaml
+- lemp-service.yaml

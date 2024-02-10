@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: lemp-wp
+  name: lemp-wp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lemp-wp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: lemp-wp
+    spec:
+      volumes:
+      - name: vol-conf
+        configMap:
+          name: php-config
+          items:
+          - key: php.ini
+            path: php.ini
+      containers:
+      - image: webdevops/php-nginx:alpine-3-php7
+        name: nginx-php-container
+        resources: {}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mysql-root-pass
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database
+              name: mysql-db-url    
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: mysql-user-pass
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mysql-user-pass
+        - name: MYSQL_HOST
+          valueFrom:
+            secretKeyRef:
+              key: host
+              name: mysql-host              
+#MYSQL_ROOT_PASSWORD, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD and MYSQL_HOST                       
+        volumeMounts:
+        - name: vol-conf
+          mountPath: /opt/docker/etc/php/php.ini 
+          subPath: php.ini
+      - image: mysql:5.6
+        name: mysql-container
+        resources: {}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mysql-root-pass
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database
+              name: mysql-db-url    
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: mysql-user-pass
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mysql-user-pass
+        - name: MYSQL_HOST
+          valueFrom:
+            secretKeyRef:
+              key: host
+              name: mysql-host                 
+status: {}
