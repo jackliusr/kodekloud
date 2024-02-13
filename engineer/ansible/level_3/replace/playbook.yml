@@ -1,0 +1,25 @@
+---
+- name: Update web servers
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: replace /opt/itadmin/blog.txt
+    ansible.builtin.replace:
+       path: /opt/itadmin/blog.txt
+       regexp: xFusionCorp
+       replace: Nautilus
+    when: inventory_hostname == "stapp01"
+  - name: replace /opt/itadmin/story.txt
+    ansible.builtin.replace:
+       path: /opt/itadmin/story.txt
+       regexp: Nautilus
+       replace: KodeKloud
+    when: inventory_hostname == "stapp02"
+  - name: replace /opt/itadmin/media.txt
+    ansible.builtin.replace:
+       path: /opt/itadmin/media.txt
+       regexp: KodeKloud
+       replace: xFusionCorp Industries
+    when: inventory_hostname == "stapp03"
