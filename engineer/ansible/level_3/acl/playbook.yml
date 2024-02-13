@@ -1,0 +1,53 @@
+---
+- name: Update web servers
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Touch /opt/sysops/blog.txt,
+    ansible.builtin.file:
+       path: /opt/sysops/blog.txt
+       state: touch
+       modification_time: preserve
+       access_time: preserve
+    when: inventory_hostname == "stapp01"
+  - name: Touch /opt/sysops/story.txt
+    ansible.builtin.file:
+       path: /opt/sysops/story.txt
+       state: touch
+       modification_time: preserve
+       access_time: preserve
+    when: inventory_hostname == "stapp02"
+  - name: Touch /opt/sysops/media.txt
+    ansible.builtin.file:
+       path: /opt/sysops/media.txt
+       state: touch
+       modification_time: preserve
+       access_time: preserve
+    when: inventory_hostname == "stapp03"
+
+  - name: acl /opt/sysops/blog.txt ,
+    ansible.posix.acl:
+      path: /opt/sysops/blog.txt
+      entity: tony
+      etype: group
+      permissions: r
+      state: present
+    when: inventory_hostname == "stapp01"
+  - name: acl /opt/sysops/story.txt
+    ansible.posix.acl:
+      path: /opt/sysops/story.txt
+      entity: steve
+      etype: user
+      permissions: rw
+      state: present
+    when: inventory_hostname == "stapp02"
+  - name: acl  /opt/sysops/media.txt
+    ansible.posix.acl:
+      path: /opt/sysops/media.txt
+      entity: banner
+      etype: group
+      permissions: rw
+      state: present
+    when: inventory_hostname == "stapp03"    
