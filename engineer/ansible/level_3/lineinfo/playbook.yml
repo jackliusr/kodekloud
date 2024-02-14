@@ -1,0 +1,27 @@
+---
+- name: Update web servers
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Install Apache Webserver
+      yum: pkg=httpd state=latest
+    - name: Enable Apache on system reboot
+      service: name=httpd enabled=yes
+      notify: restart apache
+    - name: Creating a file with content
+      copy:
+        dest: "/var/www/html/index.html"
+        group: apache
+        owner: apache
+        mode: "0644"
+        content: This is a Nautilus sample file, created using Ansible!
+    - name: add some more content
+      lineinfile: 
+        path: /var/www/html/index.html
+        insertbefore: BOF
+        line: Welcome to xFusionCorp Industries!
+  handlers:
+    - name: restart apache
+      service: name=httpd  state=restarted
