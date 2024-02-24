@@ -1,0 +1,33 @@
+/*
+
+# alreayd installed docker, git
+# yum install docker, git
+yum install java-11-openjdk-devel
+
+install jenkins , ssh, or ssh buildagent, Git
+
+jenkins: admin and password Adm!n321.
+
+git: sarah and password Sarah_pass123.
+
+BigGr33n
+http://git.stratos.xfusioncorp.com/sarah/web.git
+*/
+
+pipeline {
+    agent {
+       label 'stapp03'
+    }
+  stages {
+    stage('Build') {
+        steps {
+                git credentialsId: 'sarah', 
+					url: 'http://git.stratos.xfusioncorp.com/sarah/web.git'
+
+                sh 'docker build -t stregi01.stratos.xfusioncorp.com:5000/nginx:latest .'
+                sh 'docker push stregi01.stratos.xfusioncorp.com:5000/nginx:latest'
+                    
+            }
+        }
+    }
+}
