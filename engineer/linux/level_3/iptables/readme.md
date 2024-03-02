@@ -15,5 +15,5 @@ iptables -A INPUT -p tcp --destination-port 8087 -s 172.16.238.14 -j ACCEPT
 iptables -A INPUT -p tcp --destination-port 8087 -j DROP
 iptables -L --line-numbers
 iptables -R INPUT 5 -p icmp -j REJECT
-service iptables save 
+iptables-save
 ```
