@@ -1,0 +1,23 @@
+version: '2'
+services:
+    web:
+        image: php:apache-bullseye
+        container_name: php_blog
+        ports:
+            - "5001:80"
+        volumes:
+            - /var/www/html:/var/www/html
+        depends_on:
+            - DB
+    DB:
+        image: mariadb:latest
+        container_name: mysql_blog
+        ports:
+        - "3306:3306"
+        environment:
+        - MYSQL_ROOT_PASSWORD=my-secret-pw
+        - MYSQL_DATABASE=database_blog
+        - MYSQL_USER=phpuser
+        - MYSQL_PASSWORDchange_later
+        volumes:
+        - /var/lib/mysql:/var/lib/mysql
