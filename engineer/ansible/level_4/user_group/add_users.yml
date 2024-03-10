@@ -1,0 +1,33 @@
+- name: add user and group
+  hosts: all
+  become: true
+  become_method: sudo
+  vars_files:
+  - /home/jack/prjs/ansibe/data/users.yaml
+  tasks:
+  - name: create groups
+    group:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - admins
+      - developers
+  - name: Create the Users for Admin Group
+    user:
+      name: "{{ item }}"
+      password: "{{ 'Rc5C9EyvbU' | password_hash ('sha512') }}"
+      groups: admins, wheel
+      create_home: true
+      home: "/home/{{ item }}"
+      state: present
+    loop: "{{ admins }}"
+
+  - name: developers
+    user:
+      name: "{{ item }}"
+      password: "{{ 'GyQkFRVNr3' | password_hash ('sha512') }}"
+      groups: developers
+      create_home: true
+      home: "/var/www/{{ item }}"
+      state: present
+    loop: "{{ developers }}"
