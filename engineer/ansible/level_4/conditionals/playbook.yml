@@ -1,0 +1,30 @@
+- name: Copy the files to App Servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Copy blog.txt to stapp01
+      ansible.builtin.copy:
+        src: /usr/src/security/blog.txt
+        dest: /opt/security/
+        owner: tony
+        group: tony
+        mode: "0644"
+      when: inventory_hostname == "stapp01"
+
+    - name: Copy story.txt to stapp02
+      ansible.builtin.copy:
+        src: /usr/src/security/story.txt
+        dest: /opt/security/
+        owner: steve
+        group: steve
+        mode: "0644"
+      when: inventory_hostname == "stapp02"
+
+    - name: Copy media.txt to stapp03
+      ansible.builtin.copy:
+        src: /usr/src/security/media.txt
+        dest: /opt/security/
+        owner: banner
+        group: banner
+        mode: "0644"
+      when: inventory_hostname == "stapp03"

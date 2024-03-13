@@ -1,0 +1,40 @@
+---
+
+- name: Setup HTTPD and PHP on App Server 1
+  hosts: stapp01
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Install latest version of httpd and php
+      package:
+        name:
+          - httpd
+          - php
+        state: present
+
+    - name: Replace default DocumentRoot in httpd.conf
+      replace:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: DocumentRoot \"\/var\/www\/html\"
+        replace: DocumentRoot "/var/www/html/myroot"
+
+    - name: If non-existent, create the new DocumentRoot directory 
+      file:
+        path: /var/www/html/myroot
+        state: directory
+        owner: apache
+        group: apache
+
+    - name: Generate phpinfo.php
+      template:
+        src: /home/thor/playbooks/templates/phpinfo.php.j2
+        dest: /var/www/html/myroot/phpinfo.php
+        owner: apache
+        group: apache
+
+    - name: Start and enable service httpd
+      service:
+        name: httpd
+        state: started
+        enabled: yes
