@@ -19,3 +19,5 @@ ssh natasha@ststor01
 #!/bin/sh
 exec git tag release-$(date +%Y-%m-%d)
 ```
+
+Do you wonder why exec is used? [here](https://stackoverflow.com/questions/63743238/why-is-exec-used-seemingly-unnecessarily-at-the-end-of-this-git-hook-sample/63746637#63746637) is the answer.
