@@ -1,0 +1,16 @@
+- name: Copy the files to App Servers
+  hosts: all
+  become: yes
+  vars:
+    file2copy:
+      stapp01: blog.txt
+      stapp02: story.txt
+      stapp03: media.txt
+  tasks:
+    - name: Copy blog.txt to stapp01
+      ansible.builtin.copy:
+        src: "/usr/src/security/{{ file2copy[inventory_hostname] }}"
+        dest: /opt/security/
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0644"
