@@ -1,0 +1,46 @@
+/*
+
+ststor01	172.16.238.15	ststor01.stratos.xfusioncorp.com	natasha	Bl@kW
+
+ssh natasha@ststor01
+yum install java-11-openjdk-devel -y
+plugins: git, ssh, ssh build agent, pipeline
+
+// - Slave node 'Storage Server' not found
+Storage Server
+ - 'Storage Server' slave node's 'Remote root directory' is not set to '/var/www/html'
+
+ sshpass -p Bl@kW ssh -o StrictHostKeyChecking=no natasha@ststor01 
+
+ nautilus-webapp-job
+
+sarah  Sarah_pass123
+*/
+
+def remote = [:]
+    remote.name = 'ststor01'
+    remote.host = 'ststor01'
+    remote.user = 'natasha'
+    remote.password = 'Bl@kW'
+    remote.allowAnyHosts = true   
+
+pipeline {
+    agent {
+       label 'ststor01'
+    }
+  stages {
+    stage('Deploy') {
+        steps {
+               
+              git credentialsId: 'sarah', 
+				  url: 'http://git.stratos.xfusioncorp.com/sarah/web_app.git'  
+            
+              sshPut remote: remote, from: '.', into: '/tmp'
+
+                // Finally move all the files from /tmp to /data on ststor01
+
+              sshCommand remote: remote, command: "mv -f /tmp/${JOB_NAME}/* /var/www/html"
+            }
+        }
+    }
+}
